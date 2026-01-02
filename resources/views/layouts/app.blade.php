@@ -615,7 +615,7 @@
                     <a href="{{ route('orders.index') }}" style="padding: 0.45rem 0.9rem; margin-right:0.5rem;">📦 My Orders</a>
                 </li>
                 <li>
-                    <a href="{{ route('profile.edit') }}" style="font-weight:600;">{{ Auth::user()->name }}</a>
+                    <a href="{{ route('profile.show') }}" style="font-weight:600;">{{ Auth::user()->name }}</a>
                 </li>
                 <li>
                     <form method="POST" action="{{ route('logout') }}" style="display:inline;">

@@ -12,6 +12,27 @@ use Illuminate\View\View;
 class ProfileController extends Controller
 {
     /**
+     * Display the user's profile page with points and wallet balance.
+     */
+    public function show(Request $request): View
+    {
+        $user = $request->user();
+        $customer = $user->customer;
+        
+        // Create customer record if doesn't exist
+        if (!$customer) {
+            $customer = \App\Models\Customer::create([
+                'user_id' => $user->id,
+            ]);
+        }
+
+        return view('profile.show', [
+            'user' => $user,
+            'customer' => $customer,
+        ]);
+    }
+
+    /**
      * Display the user's profile form.
      */
     public function edit(Request $request): View
