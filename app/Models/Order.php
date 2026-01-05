@@ -54,6 +54,11 @@ class Order extends Model
         return $this->hasMany(Delivery::class);
     }
 
+    public function delivery()
+    {
+        return $this->hasOne(Delivery::class);
+    }
+
     public function transactions()
     {
         return $this->hasMany(Transaction::class);

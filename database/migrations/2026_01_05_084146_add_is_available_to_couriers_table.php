@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            //
+        Schema::table('couriers', function (Blueprint $table) {
+            $table->boolean('is_available')->default(false)->after('user_id');
+            $table->unsignedInteger('total_deliveries')->default(0)->after('rating');
         });
     }
 
@@ -21,8 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            //
+        Schema::table('couriers', function (Blueprint $table) {
+            $table->dropColumn(['is_available', 'total_deliveries']);
         });
     }
 };

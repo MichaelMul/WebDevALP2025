@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Customer;
+use App\Models\Courier;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -33,13 +35,27 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'role' => ['required', 'in:customer,courier'],
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => $request->role,
         ]);
+
+        // Create associated record based on role
+        if ($request->role === 'customer') {
+            Customer::create([
+                'user_id' => $user->id,
+            ]);
+        } elseif ($request->role === 'courier') {
+            Courier::create([
+                'user_id' => $user->id,
+                'is_available' => false, // Default to unavailable until verified
+            ]);
+        }
 
         event(new Registered($user));
 

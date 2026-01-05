@@ -76,4 +76,64 @@ class CartController extends Controller
 
         return redirect()->back()->with('success', 'Cart cleared');
     }
+
+    // ===== ADMIN CRUD =====
+
+    /**
+     * Display all cart items (admin)
+     */
+    public function adminIndex()
+    {
+        if (auth()->user()->role !== 'admin') {
+            abort(403);
+        }
+
+        $cartItems = CartItem::with(['user', 'product'])
+            ->latest()
+            ->paginate(20);
+
+        return view('admin.cart_items.index', compact('cartItems'));
+    }
+
+    /**
+     * Display cart items for specific user (admin)
+     */
+    public function show(CartItem $cartItem)
+    {
+        if (auth()->user()->role !== 'admin') {
+            abort(403);
+        }
+
+        $cartItem->load(['user', 'product']);
+        return view('admin.cart_items.show', compact('cartItem'));
+    }
+
+    /**
+     * Delete cart item (admin)
+     */
+    public function adminDestroy(CartItem $cartItem)
+    {
+        if (auth()->user()->role !== 'admin') {
+            abort(403);
+        }
+
+        $cartItem->delete();
+
+        return redirect()->route('admin.cart-items.index')->with('success', 'Cart item deleted successfully');
+    }
+
+    /**
+     * Clear all abandoned carts (admin)
+     */
+    public function clearAbandoned()
+    {
+        if (auth()->user()->role !== 'admin') {
+            abort(403);
+        }
+
+        // Delete cart items older than 7 days
+        $deleted = CartItem::where('created_at', '<', now()->subDays(7))->delete();
+
+        return redirect()->route('admin.cart-items.index')->with('success', "Cleared {$deleted} abandoned cart items");
+    }
 }

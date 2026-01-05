@@ -63,7 +63,11 @@
 
                     <div class="bg-gray-50 rounded-lg p-6">
                         <h2 class="text-xl font-bold mb-4">Quick Links</h2>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                            <a href="{{ route('admin.users.index') }}" class="p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md transition">
+                                <p class="text-sm text-gray-600">Manage Users</p>
+                                <p class="text-lg font-bold text-gray-900">Users</p>
+                            </a>
                             <a href="{{ route('admin.products.index') }}" class="p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md transition">
                                 <p class="text-sm text-gray-600">Manage Products</p>
                                 <p class="text-lg font-bold text-gray-900">Products</p>
@@ -79,6 +83,42 @@
                             <a href="{{ route('admin.customers.index') }}" class="p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md transition">
                                 <p class="text-sm text-gray-600">Manage Customers</p>
                                 <p class="text-lg font-bold text-gray-900">Customers</p>
+                            </a>
+                            <a href="{{ route('admin.orders.index') }}" class="p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md transition">
+                                <p class="text-sm text-gray-600">Manage Orders</p>
+                                <p class="text-lg font-bold text-gray-900">Orders</p>
+                            </a>
+                            <a href="{{ route('admin.deliveries.index') }}" class="p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md transition">
+                                <p class="text-sm text-gray-600">Manage Deliveries</p>
+                                <p class="text-lg font-bold text-gray-900">Deliveries</p>
+                            </a>
+                            <a href="{{ route('admin.order-items.index') }}" class="p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md transition">
+                                <p class="text-sm text-gray-600">Manage Order Items</p>
+                                <p class="text-lg font-bold text-gray-900">Order Items</p>
+                            </a>
+                            <a href="{{ route('admin.transactions.index') }}" class="p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md transition">
+                                <p class="text-sm text-gray-600">Payment Transactions</p>
+                                <p class="text-lg font-bold text-gray-900">Transactions</p>
+                            </a>
+                            <a href="{{ route('admin.wallet-transactions.index') }}" class="p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md transition">
+                                <p class="text-sm text-gray-600">Wallet Transactions</p>
+                                <p class="text-lg font-bold text-gray-900">Wallet</p>
+                            </a>
+                            <a href="{{ route('admin.order-tracking.index') }}" class="p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md transition">
+                                <p class="text-sm text-gray-600">Order Tracking Logs</p>
+                                <p class="text-lg font-bold text-gray-900">Order Tracking</p>
+                            </a>
+                            <a href="{{ route('admin.points-history.index') }}" class="p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md transition">
+                                <p class="text-sm text-gray-600">Loyalty Points</p>
+                                <p class="text-lg font-bold text-gray-900">Points History</p>
+                            </a>
+                            <a href="{{ route('admin.cancellations.index') }}" class="p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md transition">
+                                <p class="text-sm text-gray-600">Order Cancellations</p>
+                                <p class="text-lg font-bold text-gray-900">Cancellations</p>
+                            </a>
+                            <a href="{{ route('admin.cart-items.index') }}" class="p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md transition">
+                                <p class="text-sm text-gray-600">All Cart Items</p>
+                                <p class="text-lg font-bold text-gray-900">Cart Items</p>
                             </a>
                         </div>
                     </div>

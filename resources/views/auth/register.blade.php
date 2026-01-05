@@ -57,6 +57,32 @@
                 @enderror
             </div>
 
+            <!-- Account Type -->
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; font-weight: 600; color: #1a1a1a; margin-bottom: 0.75rem;">I want to register as:</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <label style="cursor: pointer;">
+                        <input type="radio" name="role" value="customer" checked style="display: none;" class="role-radio">
+                        <div class="role-option" style="padding: 1rem; border: 2px solid #D97706; border-radius: 8px; text-align: center; transition: all 0.3s; background: #FFF7ED;">
+                            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🛒</div>
+                            <div style="font-weight: 600; color: #D97706;">Customer</div>
+                            <div style="font-size: 0.75rem; color: #666; margin-top: 0.25rem;">Order food</div>
+                        </div>
+                    </label>
+                    <label style="cursor: pointer;">
+                        <input type="radio" name="role" value="courier" style="display: none;" class="role-radio">
+                        <div class="role-option" style="padding: 1rem; border: 2px solid #E5E7EB; border-radius: 8px; text-align: center; transition: all 0.3s; background: white;">
+                            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🏍️</div>
+                            <div style="font-weight: 600; color: #666;">Driver</div>
+                            <div style="font-size: 0.75rem; color: #666; margin-top: 0.25rem;">Deliver orders</div>
+                        </div>
+                    </label>
+                </div>
+                @error('role')
+                    <span style="color: #DC2626; font-size: 0.875rem; margin-top: 0.25rem; display: block;">{{ $message }}</span>
+                @enderror
+            </div>
+
             <!-- Register Button -->
             <button type="submit" style="width: 100%; background: #D97706; color: white; padding: 0.9rem; border: none; border-radius: 8px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: background 0.3s; margin-bottom: 2rem;">
                 Create Account
@@ -79,4 +105,28 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const roleRadios = document.querySelectorAll('.role-radio');
+    const roleOptions = document.querySelectorAll('.role-option');
+    
+    roleRadios.forEach((radio, index) => {
+        radio.addEventListener('change', function() {
+            roleOptions.forEach(option => {
+                option.style.border = '2px solid #E5E7EB';
+                option.style.background = 'white';
+                option.querySelector('div:nth-child(2)').style.color = '#666';
+            });
+            
+            if (radio.checked) {
+                const parentDiv = radio.nextElementSibling;
+                parentDiv.style.border = '2px solid #D97706';
+                parentDiv.style.background = '#FFF7ED';
+                parentDiv.querySelector('div:nth-child(2)').style.color = '#D97706';
+            }
+        });
+    });
+});
+</script>
 @endsection

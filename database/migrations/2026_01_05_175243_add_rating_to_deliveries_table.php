@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            //
+        Schema::table('deliveries', function (Blueprint $table) {
+            $table->integer('customer_rating')->nullable()->after('status');
+            $table->text('customer_feedback')->nullable()->after('customer_rating');
         });
     }
 
@@ -21,8 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            //
+        Schema::table('deliveries', function (Blueprint $table) {
+            $table->dropColumn(['customer_rating', 'customer_feedback']);
         });
     }
 };

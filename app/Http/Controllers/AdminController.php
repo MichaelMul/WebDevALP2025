@@ -26,7 +26,7 @@ class AdminController extends Controller
         $adminName = auth()->user()->name;
 
         // Mengirim data ke view 'admin.dashboard'
-        return view('admin.dashboard', compact(
+        return view('admin.dashboard-simple', compact(
             'totalProducts', 
             'totalCategories', 
             'totalCouriers', 

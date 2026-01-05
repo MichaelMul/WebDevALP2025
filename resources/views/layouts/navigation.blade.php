@@ -38,6 +38,18 @@
                             {{ __('Profile') }}
                         </x-dropdown-link>
 
+                        @if(Auth::user()->role === 'admin')
+                        <x-dropdown-link :href="route('admin.dashboard')">
+                            👑 {{ __('Admin Panel') }}
+                        </x-dropdown-link>
+                        @endif
+
+                        @if(Auth::user()->role === 'courier')
+                        <x-dropdown-link :href="route('courier.dashboard')">
+                            🚚 {{ __('Courier Dashboard') }}
+                        </x-dropdown-link>
+                        @endif
+
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
@@ -83,6 +95,18 @@
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
+
+                @if(Auth::user()->role === 'admin')
+                <x-responsive-nav-link :href="route('admin.dashboard')">
+                    👑 {{ __('Admin Panel') }}
+                </x-responsive-nav-link>
+                @endif
+
+                @if(Auth::user()->role === 'courier')
+                <x-responsive-nav-link :href="route('courier.dashboard')">
+                    🚚 {{ __('Courier Dashboard') }}
+                </x-responsive-nav-link>
+                @endif
 
                 <!-- Authentication -->
                 <form method="POST" action="{{ route('logout') }}">

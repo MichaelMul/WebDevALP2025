@@ -33,9 +33,25 @@
 
                     <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem; margin-top: 2rem;">Payment Method</h3>
                     
+                    @php
+                        $customer = auth()->user()->customer;
+                        $walletBalance = $customer ? $customer->wallet_balance : 0;
+                    @endphp
+                    
                     <div style="display: flex; flex-direction: column; gap: 1rem;">
                         <label style="display: flex; align-items: center; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; transition: all 0.3s;">
-                            <input type="radio" name="payment_method" value="QRIS" required style="margin-right: 1rem; width: 20px; height: 20px;">
+                            <input type="radio" name="payment_method" value="wallet" required style="margin-right: 1rem; width: 20px; height: 20px;" {{ $walletBalance < $total ? 'disabled' : '' }}>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; font-size: 1.1rem;">Kaya Wallet</div>
+                                <div style="color: #666; font-size: 0.9rem;">Balance: Rp {{ number_format($walletBalance, 0, ',', '.') }}</div>
+                                @if($walletBalance < $total)
+                                    <div style="color: #FF6B6B; font-size: 0.85rem; margin-top: 0.3rem;">Insufficient balance</div>
+                                @endif
+                            </div>
+                        </label>
+                        
+                        <label style="display: flex; align-items: center; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; transition: all 0.3s;">
+                            <input type="radio" name="payment_method" value="qris" style="margin-right: 1rem; width: 20px; height: 20px;">
                             <div>
                                 <div style="font-weight: 600; font-size: 1.1rem;">QRIS</div>
                                 <div style="color: #666; font-size: 0.9rem;">Scan QR code to pay</div>
@@ -43,15 +59,7 @@
                         </label>
 
                         <label style="display: flex; align-items: center; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; transition: all 0.3s;">
-                            <input type="radio" name="payment_method" value="E-Wallet" style="margin-right: 1rem; width: 20px; height: 20px;">
-                            <div>
-                                <div style="font-weight: 600; font-size: 1.1rem;">E-Wallet</div>
-                                <div style="color: #666; font-size: 0.9rem;">GoPay, OVO, Dana, etc.</div>
-                            </div>
-                        </label>
-
-                        <label style="display: flex; align-items: center; padding: 1rem; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; transition: all 0.3s;">
-                            <input type="radio" name="payment_method" value="Cash" style="margin-right: 1rem; width: 20px; height: 20px;">
+                            <input type="radio" name="payment_method" value="cash" style="margin-right: 1rem; width: 20px; height: 20px;">
                             <div>
                                 <div style="font-weight: 600; font-size: 1.1rem;">Cash on Delivery</div>
                                 <div style="color: #666; font-size: 0.9rem;">Pay when your order arrives</div>

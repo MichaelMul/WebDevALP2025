@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:300,400,500,600,700,800&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @yield('head')
     <style>
         :root {
             --primary: #FF6B35;
@@ -608,12 +609,20 @@
                 @endguest
 
                 @auth
+                @if(Auth::user()->role === 'courier')
+                <!-- Courier Navigation -->
+                <li>
+                    <a href="{{ route('courier.deliveries') }}" style="padding: 0.45rem 0.9rem; margin-right:0.5rem;">🚚 My Deliveries</a>
+                </li>
+                @else
+                <!-- Customer Navigation -->
                 <li>
                     <a href="{{ route('cart.index') }}" class="cart-btn" style="padding: 0.45rem 0.9rem; margin-right:0.5rem;">🛒 Cart</a>
                 </li>
                 <li>
                     <a href="{{ route('orders.index') }}" style="padding: 0.45rem 0.9rem; margin-right:0.5rem;">📦 My Orders</a>
                 </li>
+                @endif
                 <li>
                     <a href="{{ route('profile.show') }}" style="font-weight:600;">{{ Auth::user()->name }}</a>
                 </li>
@@ -623,6 +632,16 @@
                         <button type="submit" class="btn-secondary" style="padding: 0.45rem 0.9rem;">Logout</button>
                     </form>
                 </li>
+                @if(Auth::user()->role === 'admin')
+                <li>
+                    <a href="{{ route('admin.dashboard') }}" style="padding: 0.45rem 0.9rem; font-size: 1.2rem;">👑</a>
+                </li>
+                @endif
+                @if(Auth::user()->role === 'courier')
+                <li>
+                    <a href="{{ route('courier.dashboard') }}" style="padding: 0.45rem 0.9rem; font-size: 1.2rem;">🚚</a>
+                </li>
+                @endif
                 @endauth
             </ul>
             <div class="hamburger">
@@ -684,5 +703,6 @@
             <p>&copy; 2025 Kaya Boys. All rights reserved. | ALP Web Dev Project</p>
         </div>
     </footer>
+    @yield('scripts')
 </body>
 </html>

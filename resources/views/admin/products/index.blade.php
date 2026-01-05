@@ -1,220 +1,242 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Manage Products (All-in-One)
-        </h2>
-    </x-slot>
+@extends('layouts.app')
 
-    {{-- PARENT STATE UNTUK MODAL CREATE --}}
-    <div class="py-12" x-data="{ openCreate: false }">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            
-            {{-- PESAN SUKSES --}}
-            @if(session('success'))
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
-                    <span class="block sm:inline">{{ session('success') }}</span>
-                </div>
-            @endif
-
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                
-                {{-- HEADER & TOMBOL ADD --}}
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-bold text-gray-800">Product List</h3>
-                    {{-- Tombol ini memicu Modal Create --}}
-                    <button @click="openCreate = true" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow transition">
-                        + Add New Product
-                    </button>
-                </div>
-
-                {{-- TABEL PRODUK --}}
-                <div class="overflow-x-auto">
-                    <table class="min-w-full bg-white border border-gray-200">
-                        <thead class="bg-gray-100">
-                            <tr>
-                                <th class="py-3 px-6 text-left text-xs font-bold text-gray-600 uppercase">Image</th>
-                                <th class="py-3 px-6 text-left text-xs font-bold text-gray-600 uppercase">Details</th>
-                                <th class="py-3 px-6 text-left text-xs font-bold text-gray-600 uppercase">Price</th>
-                                <th class="py-3 px-6 text-center text-xs font-bold text-gray-600 uppercase">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-gray-600 text-sm font-light">
-                            @forelse($products as $product)
-                            {{-- STATE UNTUK MODAL EDIT (Setiap baris punya state sendiri) --}}
-                            <tr class="border-b border-gray-200 hover:bg-gray-50" x-data="{ openEdit: false }">
-                                
-                                {{-- Kolom Gambar --}}
-                                <td class="py-3 px-6 text-left whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        @if($product->image_url)
-                                            <img class="w-12 h-12 rounded border object-cover" src="{{ asset($product->image_url) }}" />
-                                        @else
-                                            <div class="w-12 h-12 rounded border bg-gray-100 flex items-center justify-center text-xs text-gray-400">No img</div>
-                                        @endif
-                                    </div>
-                                </td>
-
-                                {{-- Kolom Nama & Deskripsi --}}
-                                <td class="py-3 px-6 text-left">
-                                    <span class="font-medium text-gray-900 block">{{ $product->name }}</span>
-                                    <span class="text-xs text-gray-500">{{ Str::limit($product->description, 30) }}</span>
-                                    <div class="mt-1">
-                                        <span class="text-[10px] px-2 py-0.5 rounded-full {{ $product->is_available ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600' }}">
-                                            {{ $product->is_available ? 'Available' : 'Unavailable' }}
-                                        </span>
-                                    </div>
-                                </td>
-
-                                {{-- Kolom Harga --}}
-                                <td class="py-3 px-6 text-left font-bold text-orange-600">
-                                    Rp {{ number_format($product->price, 0, ',', '.') }}
-                                </td>
-
-                                {{-- Kolom Aksi --}}
-                                <td class="py-3 px-6 text-center">
-                                    <div class="flex item-center justify-center gap-2">
-                                        {{-- Tombol Edit (Buka Modal) --}}
-                                        <button @click="openEdit = true" class="w-8 h-8 rounded-full bg-yellow-100 text-yellow-600 hover:bg-yellow-200 flex items-center justify-center transition">
-                                            ✏️
-                                        </button>
-
-                                        {{-- Tombol Delete --}}
-                                        <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" onsubmit="return confirm('Delete {{ $product->name }}?');">
-                                            @csrf @method('DELETE')
-                                            <button type="submit" class="w-8 h-8 rounded-full bg-red-100 text-red-600 hover:bg-red-200 flex items-center justify-center transition">
-                                                🗑️
-                                            </button>
-                                        </form>
-                                    </div>
-
-                                    {{-- ====================== --}}
-                                    {{-- MODAL EDIT (POPUP) --}}
-                                    {{-- ====================== --}}
-                                    <div x-show="openEdit" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-                                        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                                            {{-- Overlay Gelap --}}
-                                            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="openEdit = false"></div>
-
-                                            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-                                            
-                                            {{-- Kotak Modal --}}
-                                            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
-                                                <form action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data" class="p-6">
-                                                    @csrf @method('PUT')
-                                                    
-                                                    <h3 class="text-lg font-bold text-gray-900 mb-4">Edit Product</h3>
-                                                    
-                                                    <div class="space-y-4 text-left">
-                                                        <div>
-                                                            <label class="block text-sm font-medium text-gray-700">Name</label>
-                                                            <input type="text" name="name" value="{{ $product->name }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
-                                                        </div>
-                                                        <div>
-                                                            <label class="block text-sm font-medium text-gray-700">Price</label>
-                                                            <input type="number" name="price" value="{{ $product->price }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
-                                                        </div>
-                                                        <div>
-                                                            <label class="block text-sm font-medium text-gray-700">Category</label>
-                                                            <select name="category_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                                                                {{-- Pastikan controller mengirim $categories --}}
-                                                                @foreach(\App\Models\Category::all() as $cat)
-                                                                    <option value="{{ $cat->id }}" {{ $product->category_id == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                        <div>
-                                                            <label class="block text-sm font-medium text-gray-700">Description</label>
-                                                            <textarea name="description" rows="2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">{{ $product->description }}</textarea>
-                                                        </div>
-                                                        <div>
-                                                            <label class="block text-sm font-medium text-gray-700">Change Image</label>
-                                                            <input type="file" name="image" class="mt-1 block w-full text-sm">
-                                                        </div>
-                                                        <div class="flex items-center">
-                                                            <input type="checkbox" name="is_available" value="1" {{ $product->is_available ? 'checked' : '' }} class="rounded border-gray-300 text-blue-600 shadow-sm">
-                                                            <span class="ml-2 text-sm text-gray-600">Available for Order</span>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="mt-5 sm:mt-6 flex justify-end gap-2">
-                                                        <button type="button" @click="openEdit = false" class="bg-gray-300 text-gray-700 px-4 py-2 rounded font-bold hover:bg-gray-400">Cancel</button>
-                                                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded font-bold hover:bg-blue-700">Save Changes</button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {{-- END MODAL EDIT --}}
-
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="4" class="py-8 text-center text-gray-400">
-                                    No products found. Click "Add New Product" to start.
-                                </td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-
+@section('content')
+<div style="min-height: 100vh; background-color: #f3f4f6; padding: 2rem 0;">
+    <div style="max-width: 1400px; margin: 0 auto; padding: 0 1rem;">
+        
+        <!-- Header -->
+        <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="font-size: 1.5rem; font-weight: 600; color: #1f2937;">Manage Products</h2>
+                <button onclick="document.getElementById('createModal').style.display='flex'" 
+                        style="background: #3b82f6; color: white; padding: 0.625rem 1.25rem; border-radius: 6px; border: none; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                    + Add Product
+                </button>
             </div>
         </div>
 
-        {{-- ====================== --}}
-        {{-- MODAL CREATE (POPUP) --}}
-        {{-- ====================== --}}
-        <div x-show="openCreate" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="openCreate = false"></div>
-                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-                
-                <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
-                    <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data" class="p-6">
-                        @csrf
-                        <h3 class="text-lg font-bold text-gray-900 mb-4">Add New Product</h3>
-                        
-                        <div class="space-y-4 text-left">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Name</label>
-                                <input type="text" name="name" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required placeholder="Ex: Beef Burger">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Price (Rp)</label>
-                                <input type="number" name="price" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required placeholder="25000">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Category</label>
-                                <select name="category_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                                    {{-- Mengambil kategori langsung dari Model untuk Form Create --}}
-                                    @foreach(\App\Models\Category::all() as $cat)
-                                        <option value="{{ $cat->id }}">{{ $cat->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Description</label>
-                                <textarea name="description" rows="2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Image</label>
-                                <input type="file" name="image" class="mt-1 block w-full text-sm">
-                            </div>
-                            <div class="flex items-center">
-                                <input type="checkbox" name="is_available" value="1" checked class="rounded border-gray-300 text-blue-600 shadow-sm">
-                                <span class="ml-2 text-sm text-gray-600">Available for Order</span>
-                            </div>
-                        </div>
-
-                        <div class="mt-5 sm:mt-6 flex justify-end gap-2">
-                            <button type="button" @click="openCreate = false" class="bg-gray-300 text-gray-700 px-4 py-2 rounded font-bold hover:bg-gray-400">Cancel</button>
-                            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded font-bold hover:bg-blue-700">Save Product</button>
-                        </div>
-                    </form>
-                </div>
+        <!-- Success Message -->
+        @if(session('success'))
+            <div style="background: #d1fae5; border: 1px solid #34d399; color: #065f46; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                {{ session('success') }}
             </div>
+        @endif
+
+        <!-- Products Table -->
+        <div style="background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead style="background: #f9fafb; border-bottom: 1px solid #e5e7eb;">
+                    <tr>
+                        <th style="padding: 0.75rem 1.5rem; text-align: left; font-size: 0.75rem; font-weight: 700; color: #6b7280; text-transform: uppercase;">Image</th>
+                        <th style="padding: 0.75rem 1.5rem; text-align: left; font-size: 0.75rem; font-weight: 700; color: #6b7280; text-transform: uppercase;">Name</th>
+                        <th style="padding: 0.75rem 1.5rem; text-align: left; font-size: 0.75rem; font-weight: 700; color: #6b7280; text-transform: uppercase;">Description</th>
+                        <th style="padding: 0.75rem 1.5rem; text-align: center; font-size: 0.75rem; font-weight: 700; color: #6b7280; text-transform: uppercase;">Category</th>
+                        <th style="padding: 0.75rem 1.5rem; text-align: center; font-size: 0.75rem; font-weight: 700; color: #6b7280; text-transform: uppercase;">Price</th>
+                        <th style="padding: 0.75rem 1.5rem; text-align: center; font-size: 0.75rem; font-weight: 700; color: #6b7280; text-transform: uppercase;">Stock</th>
+                        <th style="padding: 0.75rem 1.5rem; text-align: center; font-size: 0.75rem; font-weight: 700; color: #6b7280; text-transform: uppercase;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($products as $product)
+                    <tr style="border-bottom: 1px solid #e5e7eb;">
+                        <td style="padding: 1rem 1.5rem;">
+                            @if($product->image_url)
+                                <img src="{{ asset($product->image_url) }}" alt="{{ $product->name }}" 
+                                     style="width: 48px; height: 48px; object-fit: cover; border-radius: 4px; border: 1px solid #e5e7eb;">
+                            @else
+                                <div style="width: 48px; height: 48px; background: #f3f4f6; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #9ca3af;">
+                                    📦
+                                </div>
+                            @endif
+                        </td>
+                        <td style="padding: 1rem 1.5rem; color: #374151; font-weight: 600;">{{ $product->name }}</td>
+                        <td style="padding: 1rem 1.5rem; color: #6b7280; max-width: 300px;">
+                            {{ Str::limit($product->description, 60) }}
+                        </td>
+                        <td style="padding: 1rem 1.5rem; text-align: center;">
+                            @if($product->category)
+                                <span style="background: #dbeafe; color: #1e40af; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600;">
+                                    {{ $product->category->name }}
+                                </span>
+                            @else
+                                <span style="color: #9ca3af;">-</span>
+                            @endif
+                        </td>
+                        <td style="padding: 1rem 1.5rem; text-align: center; color: #374151; font-weight: 600;">
+                            Rp {{ number_format($product->price, 0, ',', '.') }}
+                        </td>
+                        <td style="padding: 1rem 1.5rem; text-align: center;">
+                            @if($product->is_available)
+                                <span style="background: #d1fae5; color: #065f46; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600;">
+                                    ✓ Available
+                                </span>
+                            @else
+                                <span style="background: #fee2e2; color: #991b1b; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600;">
+                                    ✗ Unavailable
+                                </span>
+                            @endif
+                        </td>
+                        <td style="padding: 1rem 1.5rem; text-align: center;">
+                            <button onclick="editProduct({{ $product->id }}, '{{ addslashes($product->name) }}', '{{ addslashes($product->description) }}', {{ $product->price }}, {{ $product->category_id ?? 'null' }}, {{ $product->is_available ? 'true' : 'false' }})"
+                                    style="background: #f59e0b; color: white; padding: 0.5rem 1rem; border-radius: 4px; border: none; margin-right: 0.5rem; cursor: pointer; font-size: 0.875rem;">
+                                Edit
+                            </button>
+                            <form action="{{ route('admin.products.destroy', $product) }}" method="POST" style="display: inline;" 
+                                  onsubmit="return confirm('Delete {{ $product->name }}?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" style="background: #ef4444; color: white; padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-size: 0.875rem;">
+                                    Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="7" style="padding: 2rem; text-align: center; color: #9ca3af;">
+                            No products found. Click "+ Add Product" to create one.
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
 
     </div>
-</x-app-layout>
+</div>
+
+<!-- Create Modal -->
+<div id="createModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+    <div style="background: white; border-radius: 8px; padding: 2rem; width: 90%; max-width: 600px; margin: 2rem auto; max-height: 90vh; overflow-y: auto;">
+        <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #1f2937;">Add New Product</h3>
+        <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Name</label>
+                <input type="text" name="name" required 
+                       style="width: 100%; padding: 0.625rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem;">
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Description</label>
+                <textarea name="description" required rows="3" 
+                          style="width: 100%; padding: 0.625rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem;"></textarea>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Price (Rp)</label>
+                <input type="number" name="price" required min="0" step="1000"
+                       style="width: 100%; padding: 0.625rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem;">
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Category</label>
+                <select name="category_id" 
+                        style="width: 100%; padding: 0.625rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem;">
+                    <option value="">-- None --</option>
+                    @foreach(\App\Models\Category::all() as $category)
+                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Image</label>
+                <input type="file" name="image" accept="image/*"
+                       style="width: 100%; padding: 0.625rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem;">
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: flex; align-items: center; cursor: pointer;">
+                    <input type="checkbox" name="is_available" value="1" checked
+                           style="width: 16px; height: 16px; margin-right: 0.5rem;">
+                    <span style="font-weight: 600; color: #374151;">Available for purchase</span>
+                </label>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+                <button type="button" onclick="document.getElementById('createModal').style.display='none'" 
+                        style="background: #6b7280; color: white; padding: 0.625rem 1.25rem; border-radius: 6px; border: none; cursor: pointer;">
+                    Cancel
+                </button>
+                <button type="submit" 
+                        style="background: #3b82f6; color: white; padding: 0.625rem 1.25rem; border-radius: 6px; border: none; cursor: pointer; font-weight: 600;">
+                    Create
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div id="editModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+    <div style="background: white; border-radius: 8px; padding: 2rem; width: 90%; max-width: 600px; margin: 2rem auto; max-height: 90vh; overflow-y: auto;">
+        <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #1f2937;">Edit Product</h3>
+        <form id="editForm" method="POST" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Name</label>
+                <input type="text" id="editName" name="name" required 
+                       style="width: 100%; padding: 0.625rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem;">
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Description</label>
+                <textarea id="editDescription" name="description" required rows="3" 
+                          style="width: 100%; padding: 0.625rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem;"></textarea>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Price (Rp)</label>
+                <input type="number" id="editPrice" name="price" required min="0" step="1000"
+                       style="width: 100%; padding: 0.625rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem;">
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Category</label>
+                <select id="editCategory" name="category_id" 
+                        style="width: 100%; padding: 0.625rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem;">
+                    <option value="">-- None --</option>
+                    @foreach(\App\Models\Category::all() as $category)
+                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Image (leave empty to keep current)</label>
+                <input type="file" name="image" accept="image/*"
+                       style="width: 100%; padding: 0.625rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem;">
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: flex; align-items: center; cursor: pointer;">
+                    <input type="checkbox" id="editAvailable" name="is_available" value="1"
+                           style="width: 16px; height: 16px; margin-right: 0.5rem;">
+                    <span style="font-weight: 600; color: #374151;">Available for purchase</span>
+                </label>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+                <button type="button" onclick="document.getElementById('editModal').style.display='none'" 
+                        style="background: #6b7280; color: white; padding: 0.625rem 1.25rem; border-radius: 6px; border: none; cursor: pointer;">
+                    Cancel
+                </button>
+                <button type="submit" 
+                        style="background: #f59e0b; color: white; padding: 0.625rem 1.25rem; border-radius: 6px; border: none; cursor: pointer; font-weight: 600;">
+                    Update
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function editProduct(id, name, description, price, categoryId, isAvailable) {
+    document.getElementById('editForm').action = '/admin/products/' + id;
+    document.getElementById('editName').value = name;
+    document.getElementById('editDescription').value = description;
+    document.getElementById('editPrice').value = price;
+    document.getElementById('editCategory').value = categoryId || '';
+    document.getElementById('editAvailable').checked = isAvailable;
+    document.getElementById('editModal').style.display = 'flex';
+}
+
+// Close modals when clicking outside
+document.getElementById('createModal').onclick = function(e) {
+    if (e.target.id === 'createModal') this.style.display = 'none';
+}
+document.getElementById('editModal').onclick = function(e) {
+    if (e.target.id === 'editModal') this.style.display = 'none';
+}
+</script>
+@endsection
