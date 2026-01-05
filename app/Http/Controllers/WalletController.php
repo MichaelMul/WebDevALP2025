@@ -7,14 +7,14 @@ use App\Models\Customer;
 use App\Models\Transaction;
 use App\Models\WalletTransaction;
 use Illuminate\Http\Request;
-use Illuminate\Redirects\Redirector;
+use Illuminate\Http\RedirectResponse;
 
 class WalletController extends Controller
 {
     /**
      * Process wallet top-up
      */
-    public function topup(Request $request): Redirector
+    public function topup(Request $request): RedirectResponse
     {
         // Validate input
         $validated = $request->validate([

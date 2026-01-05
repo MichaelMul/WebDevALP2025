@@ -4,6 +4,11 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\WalletController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CourierController;
+use App\Http\Controllers\CustomerController;
 use App\Models\Product;
 use Illuminate\Support\Facades\Route;
 
@@ -44,6 +49,19 @@ Route::middleware('auth')->group(function () {
     // Wallet routes
     Route::post('/wallet/topup', [WalletController::class, 'topup'])->name('wallet.topup');
     Route::get('/wallet/history', [WalletController::class, 'history'])->name('wallet.history');
+});
+
+// --- KHUSUS ADMIN (CRUD LENGKAP) ---
+Route::middleware(['auth', 'verified', 'admin'])->group(function () {
+    
+    // Dashboard Admin
+    Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    
+    // CRUD Resources
+    Route::resource('admin/products', ProductController::class, ['as' => 'admin']);
+    Route::resource('admin/categories', CategoryController::class, ['as' => 'admin']);
+    Route::resource('admin/couriers', CourierController::class, ['as' => 'admin']);
+    Route::resource('admin/customers', CustomerController::class, ['as' => 'admin']);
 });
 
 require __DIR__.'/auth.php';
