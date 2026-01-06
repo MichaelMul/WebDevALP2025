@@ -183,9 +183,14 @@ class OrderController extends Controller
             });
         }
 
+        // Determine payment status based on refund
+        $paymentStatus = ($order->payment_method === 'wallet' && $order->payment_status === 'paid') 
+            ? 'refunded' 
+            : 'pending';
+
         $order->update([
             'order_status' => 'cancelled',
-            'payment_status' => 'cancelled',
+            'payment_status' => $paymentStatus,
         ]);
 
         return redirect()->route('orders.show', $order)->with('success', 'Order cancelled successfully' . ($order->payment_method === 'wallet' ? '. Refund has been credited to your wallet.' : ''));
@@ -225,9 +230,6 @@ class OrderController extends Controller
 
             // Update courier's average rating
             $courier = $order->delivery->courier;
-            $totalRatings = \App\Models\Delivery::where('courier_id', $courier->id)
-                ->whereNotNull('customer_rating')
-                ->count();
             
             $averageRating = \App\Models\Delivery::where('courier_id', $courier->id)
                 ->whereNotNull('customer_rating')

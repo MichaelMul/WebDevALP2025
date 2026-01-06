@@ -13,16 +13,19 @@ class Delivery extends Model
         'order_id',
         'courier_id',
         'status',
-        'picked_up_at',
-        'delivered_at',
+        'pickup_time',
+        'delivery_time',
         'delivery_notes',
+        'customer_rating',
+        'customer_feedback',
     ];
 
     protected $casts = [
-        'picked_up_at' => 'datetime',
-        'delivered_at' => 'datetime',
+        'pickup_time' => 'datetime',
+        'delivery_time' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'customer_rating' => 'integer',
     ];
 
     // Relationships

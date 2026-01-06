@@ -45,7 +45,7 @@ class CourierDashboardController extends Controller
 
         $stats = [
             'total_deliveries' => $courier->total_deliveries ?? 0,
-            'rating' => $courier->ratings ?? 0,
+            'rating' => $courier->rating ?? 0,
             'active_count' => $activeDeliveries->count(),
             'completed_today' => Delivery::where('courier_id', $courier->id)
                 ->where('status', 'delivered')

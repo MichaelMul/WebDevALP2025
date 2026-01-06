@@ -87,21 +87,21 @@
                             @csrf
                             <div style="margin-bottom: 1.5rem;">
                                 <label style="display: block; font-weight: 600; margin-bottom: 0.8rem; color: #1a1a1a; text-align: center;">Rate Your Courier</label>
-                                <div style="display: flex; justify-content: center; gap: 0.5rem; font-size: 2rem;">
+                                <div id="starContainer" style="display: flex; justify-content: center; gap: 0.3rem; font-size: 2.5rem;">
                                     <input type="radio" name="rating" value="1" id="star1" style="display: none;" required>
-                                    <label for="star1" onclick="setRating(1)" style="cursor: pointer;">⭐</label>
+                                    <label for="star1" class="star-label" data-value="1" style="cursor: pointer; user-select: none;">☆</label>
                                     
                                     <input type="radio" name="rating" value="2" id="star2" style="display: none;">
-                                    <label for="star2" onclick="setRating(2)" style="cursor: pointer;">⭐</label>
+                                    <label for="star2" class="star-label" data-value="2" style="cursor: pointer; user-select: none;">☆</label>
                                     
                                     <input type="radio" name="rating" value="3" id="star3" style="display: none;">
-                                    <label for="star3" onclick="setRating(3)" style="cursor: pointer;">⭐</label>
+                                    <label for="star3" class="star-label" data-value="3" style="cursor: pointer; user-select: none;">☆</label>
                                     
                                     <input type="radio" name="rating" value="4" id="star4" style="display: none;">
-                                    <label for="star4" onclick="setRating(4)" style="cursor: pointer;">⭐</label>
+                                    <label for="star4" class="star-label" data-value="4" style="cursor: pointer; user-select: none;">☆</label>
                                     
                                     <input type="radio" name="rating" value="5" id="star5" style="display: none;">
-                                    <label for="star5" onclick="setRating(5)" style="cursor: pointer;">⭐</label>
+                                    <label for="star5" class="star-label" data-value="5" style="cursor: pointer; user-select: none;">☆</label>
                                 </div>
                                 <div id="ratingText" style="text-align: center; margin-top: 0.5rem; color: #666; font-size: 0.9rem;">Click to rate</div>
                             </div>
@@ -138,22 +138,53 @@
             </div>
 
 <script>
-function setRating(rating) {
-    const labels = document.querySelectorAll('label[for^="star"]');
-    const ratingText = document.getElementById('ratingText');
-    const texts = ['Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+const texts = ['Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+const starLabels = document.querySelectorAll('.star-label');
+const starContainer = document.getElementById('starContainer');
+const ratingText = document.getElementById('ratingText');
+
+// Add hover effect to show half and full stars
+starLabels.forEach((label, index) => {
+    label.addEventListener('mouseover', function() {
+        updateStarDisplay(index + 1);
+    });
     
-    labels.forEach((label, index) => {
+    label.addEventListener('click', function() {
+        setRating(index + 1);
+    });
+});
+
+// Reset stars when mouse leaves container
+starContainer.addEventListener('mouseleave', function() {
+    const checkedStar = document.querySelector('input[name="rating"]:checked');
+    if (checkedStar) {
+        updateStarDisplay(parseInt(checkedStar.value));
+    } else {
+        starLabels.forEach(label => {
+            label.textContent = '☆';
+            label.style.color = '#D1D5DB';
+        });
+    }
+});
+
+function updateStarDisplay(rating) {
+    starLabels.forEach((label, index) => {
         if (index < rating) {
+            label.textContent = '★'; // Full star
             label.style.color = '#F59E0B';
         } else {
+            label.textContent = '☆'; // Empty star
             label.style.color = '#D1D5DB';
         }
     });
-    
+}
+
+function setRating(rating) {
     document.getElementById('star' + rating).checked = true;
+    updateStarDisplay(rating);
     ratingText.textContent = texts[rating - 1];
     ratingText.style.color = '#F59E0B';
+    ratingText.style.fontWeight = '600';
 }
 </script>
 
